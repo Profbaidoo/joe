@@ -1,0 +1,16 @@
+{
+  "name": "ghana-fintech-platform",
+  "version": "1.0.0",
+  "description": "Ghana Mobile Money, Airtime & Data Bundle Platform",
+  "scripts": {
+    "backend:start": "cd backend && python run.py",
+    "backend:seed": "cd backend && python seed.py",
+    "backend:test": "cd backend && pytest tests -v",
+    "web:dev": "cd frontend/web-admin && npm run dev",
+    "web:build": "cd frontend/web-admin && npm run build",
+    "mobile:start": "cd frontend/mobile && npm start"
+  },
+  "keywords": ["ghana", "momo", "mtn", "telecel", "airtime", "fintech"],
+  "author": "Blessings Telecom",
+  "license": "UNLICENSED"
+}

@@ -1,0 +1,203 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Ghana Fintech MoMo, Airtime & Data API",
+    "description": "Production-ready REST API for Ghanaian Mobile Money, Telecom, and Digital Financial Services",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Blessings Telecom Technical Support",
+      "email": "support@blessingstelecom.com.gh"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:5000",
+      "description": "Local Development Server"
+    },
+    {
+      "url": "https://api.blessingstelecom.com.gh",
+      "description": "Production Environment (HTTPS)"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Enter your JWT access token obtained from /api/auth/login"
+      }
+    },
+    "schemas": {
+      "RegisterRequest": {
+        "type": "object",
+        "required": ["username", "email", "phone_number", "password", "full_name"],
+        "properties": {
+          "username": { "type": "string", "example": "kwame_mensah" },
+          "email": { "type": "string", "example": "kwame@example.com" },
+          "phone_number": { "type": "string", "example": "0241234567" },
+          "password": { "type": "string", "example": "SecureP@ss2026!" },
+          "full_name": { "type": "string", "example": "Kwame Mensah" },
+          "momo_network": { "type": "string", "enum": ["MTN", "TELECEL", "AT"], "example": "MTN" }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": ["login", "password"],
+        "properties": {
+          "login": { "type": "string", "example": "admin" },
+          "password": { "type": "string", "example": "Admin1234!" }
+        }
+      },
+      "OrderRequest": {
+        "type": "object",
+        "required": ["order_type", "recipient_phone", "network_code"],
+        "properties": {
+          "order_type": { "type": "string", "enum": ["AIRTIME", "DATA_BUNDLE", "MOMO_TRANSFER", "MOMO_CASHOUT", "UTILITY_BILL"], "example": "AIRTIME" },
+          "recipient_phone": { "type": "string", "example": "0241234567" },
+          "network_code": { "type": "string", "enum": ["MTN", "TELECEL", "AT"], "example": "MTN" },
+          "amount": { "type": "number", "example": 10.00 },
+          "data_bundle_plan_id": { "type": "integer", "example": 1 }
+        }
+      },
+      "MoMoPaymentRequest": {
+        "type": "object",
+        "required": ["order_id", "momo_phone"],
+        "properties": {
+          "order_id": { "type": "integer", "example": 1 },
+          "momo_phone": { "type": "string", "example": "0241234567" }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/api/health": {
+      "get": {
+        "summary": "System Health and Environment Diagnostic Check",
+        "responses": {
+          "200": { "description": "System status report" }
+        }
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "summary": "Register a new Ghanaian customer account",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/RegisterRequest" } }
+          }
+        },
+        "responses": {
+          "201": { "description": "Customer registered successfully" },
+          "400": { "description": "Validation error or invalid Ghana mobile number" }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "summary": "Authenticate user and issue JWT tokens",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/LoginRequest" } }
+          }
+        },
+        "responses": {
+          "200": { "description": "Tokens issued" },
+          "401": { "description": "Invalid credentials" }
+        }
+      }
+    },
+    "/api/products": {
+      "get": {
+        "summary": "List telecom products catalog",
+        "parameters": [
+          { "name": "category", "in": "query", "schema": { "type": "string" } },
+          { "name": "network", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "List of products" }
+        }
+      }
+    },
+    "/api/data-bundles": {
+      "get": {
+        "summary": "List available internet data bundle packages",
+        "parameters": [
+          { "name": "network", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "List of bundle plans" }
+        }
+      }
+    },
+    "/api/orders": {
+      "post": {
+        "summary": "Create new Airtime, Data Bundle, or Utility Bill order",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/OrderRequest" } }
+          }
+        },
+        "responses": {
+          "201": { "description": "Order created with PENDING status" }
+        }
+      },
+      "get": {
+        "summary": "List paginated orders",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Paginated orders list" }
+        }
+      }
+    },
+    "/api/payments/momo/request": {
+      "post": {
+        "summary": "Dispatch MTN MoMo Request-To-Pay push to customer phone",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/MoMoPaymentRequest" } }
+          }
+        },
+        "responses": {
+          "200": { "description": "Prompt dispatched, status is PENDING customer approval" }
+        }
+      }
+    },
+    "/api/payments/momo/status/{reference}": {
+      "get": {
+        "summary": "Verify and reconcile payment status with MTN MoMo Open API",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "reference", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Updated transaction status and fulfillment result" }
+        }
+      }
+    },
+    "/api/webhooks/momo": {
+      "post": {
+        "summary": "MTN MoMo official callback receiver",
+        "responses": {
+          "200": { "description": "Webhook received and ledger reconciled" }
+        }
+      }
+    },
+    "/api/admin/dashboard": {
+      "get": {
+        "summary": "Executive financial metrics and KPIs",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Dashboard analytics" },
+          "403": { "description": "Requires ADMIN role" }
+        }
+      }
+    }
+  }
+}

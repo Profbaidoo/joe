@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+venv/
+env/
+.env
+
+# Python Cache & Databases
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+instance/
+
+# Build Outputs
+dist/
+build/
+.expo/
+.expo-shared/
+
+# Operating System & IDEs
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "Blessings MoMo & Telecom",
+    "slug": "blessings-momo-telecom",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#FFCC00"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#FFCC00"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "apiBaseUrl": "http://10.0.2.2:5000/api",
+      "businessName": "Blessings Telecom & Financial Services Ltd."
+    }
+  }
+}
